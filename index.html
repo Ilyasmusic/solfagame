@@ -411,7 +411,6 @@
             { name:"большой уменьшенный секундаккорд", seventh:"большая", quality:"уменьшенный", inversion:"секундаккорд", notes:"c des fes ases", type:"seventh", augDim:"dim" },
             { name:"большой увеличенный секундаккорд", seventh:"большая", quality:"увеличенный", inversion:"секундаккорд", notes:"c des f a", type:"seventh", augDim:"aug" },
             { name:"уменьшенный уменьшенный септаккорд", seventh:"малая", quality:"уменьшенный", inversion:"септаккорд", notes:"c es ges heses", type:"seventh", augDim:"dim" },
-            { name:"увеличенный увеличенный септаккорд", seventh:"большая", quality:"увеличенный", inversion:"септаккорд", notes:"c e gis his", type:"seventh", augDim:"aug" }
         ];
 
         function filterChords() {
@@ -535,7 +534,7 @@
             const fb=document.createElement('div'); fb.className='feedback-text';
             fb.textContent=ok? '✅ Верно! Отлично!' : `❌ Неправильно. Это был: ${currentChord.name}.`;
             msgDiv.appendChild(fb);
-            const again=document.createElement('button'); again.textContent='🔄 Ещё раз'; again.className='again-btn';
+            const again=document.createElement('button'); again.textContent='🔄 Новый аккорд'; again.className='again-btn';
             again.onclick=()=>{ currentChord=selectRandomChord(); msgDiv.innerHTML='<div class="feedback-text">🎵 Новый аккорд! Нажми "Сыграть".</div>'; setTimeout(()=>msgDiv.innerHTML='',2000); };
             msgDiv.appendChild(again);
         }
@@ -570,7 +569,7 @@
             const fb=document.createElement('div'); fb.className='feedback-text';
             fb.textContent=ok? '✅ Верно! Отлично!' : `❌ Неправильно. Это был: ${currentInterval.name}.`;
             msgDiv.appendChild(fb);
-            const again=document.createElement('button'); again.textContent='🔄 Ещё раз'; again.className='again-btn';
+            const again=document.createElement('button'); again.textContent='🔄 Новый аккорд'; again.className='again-btn';
             again.onclick=()=>{ currentInterval=selectRandomInterval(); msgDiv.innerHTML='<div class="feedback-text">🎵 Новый интервал! Нажми "Сыграть".</div>'; setTimeout(()=>msgDiv.innerHTML='',2000); };
             msgDiv.appendChild(again);
         }
