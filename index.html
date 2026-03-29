@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Тренировка слуха</title>
+    <title>Слуховая тренировка: аккорды, интервалы, лады</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
 
         body {
             min-height: 100vh;
-            background: #e0eafc;  /* фиксированный цвет, без градиента для стабильности */
+            background: #e0eafc;
             font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
             padding: 1rem;
             display: flex;
@@ -59,7 +59,7 @@
         .play-panel {
             display: flex;
             justify-content: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .play-btn {
@@ -83,8 +83,35 @@
             transform: translateY(-2px);
         }
 
-        .play-btn:active {
-            transform: translateY(1px);
+        .filters-panel {
+            background: #ffffffcc;
+            border-radius: 32px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: center;
+            background: #fef9e6;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+        }
+
+        .filter-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1e2a3e;
+            cursor: pointer;
         }
 
         .selector-row {
@@ -92,7 +119,7 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 1.5rem;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
         }
 
         .selector-column {
@@ -102,7 +129,6 @@
             border-radius: 32px;
             padding: 1rem;
             text-align: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
         .selector-column h3 {
@@ -124,7 +150,6 @@
             background: #fef9e6;
             font-weight: 500;
             cursor: pointer;
-            text-align: center;
         }
 
         .submit-area {
@@ -142,11 +167,6 @@
             border-radius: 60px;
             cursor: pointer;
             transition: 0.2s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-
-        .check-btn:hover {
-            background: #e0b03a;
         }
 
         .message-area {
@@ -176,11 +196,6 @@
             font-weight: bold;
             color: white;
             cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .again-btn:hover {
-            background: #1e2f3c;
         }
 
         .hidden {
@@ -203,26 +218,10 @@
             font-weight: bold;
         }
 
-        /* мобильная адаптация */
         @media (max-width: 700px) {
-            .game-container {
-                padding: 1rem;
-            }
-            .selector-row {
-                flex-direction: column;
-                gap: 0.8rem;
-            }
-            .selector-column {
-                min-width: auto;
-            }
-            .tab-btn {
-                padding: 0.4rem 1rem;
-                font-size: 0.9rem;
-            }
-            .play-btn {
-                padding: 0.6rem 1.4rem;
-                font-size: 1rem;
-            }
+            .game-container { padding: 1rem; }
+            .selector-row { flex-direction: column; gap: 0.8rem; }
+            .filter-group { flex-wrap: wrap; justify-content: center; }
         }
     </style>
 </head>
@@ -234,28 +233,46 @@
         <button class="tab-btn" data-mode="scales">🎶 Лады</button>
     </div>
 
-    <!-- Режим аккордов (3 колонки) -->
+    <!-- Аккорды -->
     <div id="chordsMode">
-        <div class="play-panel">
-            <button class="play-btn" id="playChordBtn">🎵 Сыграть аккорд</button>
+        <div class="play-panel"><button class="play-btn" id="playChordBtn">🎵 Сыграть аккорд</button></div>
+        <div class="filters-panel" id="chordsFilters">
+            <div class="filter-group">
+                <label><input type="checkbox" id="chordTriads" checked> Трезвучия</label>
+                <label><input type="checkbox" id="chordSevenths" checked> Септаккорды</label>
+            </div>
+            <div class="filter-group">
+                <label><input type="checkbox" id="chordAug" checked> Увеличенные</label>
+                <label><input type="checkbox" id="chordDim" checked> Уменьшенные</label>
+            </div>
+            <div class="filter-group">
+                <label><input type="checkbox" id="chordInversions" checked> Обращения</label>
+            </div>
         </div>
         <div id="chordsDynamicZone"></div>
         <div id="chordsMessageArea" class="message-area"></div>
     </div>
 
-    <!-- Режим интервалов (2 колонки) -->
+    <!-- Интервалы (без изменений) -->
     <div id="intervalsMode" class="hidden">
-        <div class="play-panel">
-            <button class="play-btn" id="playIntervalBtn">🎵 Сыграть интервал</button>
-        </div>
+        <div class="play-panel"><button class="play-btn" id="playIntervalBtn">🎵 Сыграть интервал</button></div>
         <div id="intervalsDynamicZone"></div>
         <div id="intervalsMessageArea" class="message-area"></div>
     </div>
 
-    <!-- Режим ладов (1 колонка со списком, но игра вверх/вниз) -->
+    <!-- Лады -->
     <div id="scalesMode" class="hidden">
-        <div class="play-panel">
-            <button class="play-btn" id="playScaleBtn">🎵 Сыграть лад (вверх-вниз)</button>
+        <div class="play-panel"><button class="play-btn" id="playScaleBtn">🎵 Сыграть лад (вверх-вниз)</button></div>
+        <div class="filters-panel" id="scalesFilters">
+            <div class="filter-group">
+                <label><input type="checkbox" id="scaleNatural" checked> Натуральные</label>
+                <label><input type="checkbox" id="scaleHarmonic" checked> Гармонические</label>
+                <label><input type="checkbox" id="scaleMelodic" checked> Мелодические</label>
+            </div>
+            <div class="filter-group">
+                <label><input type="checkbox" id="scaleFolk" checked> Народные (лид. микс. дор. фриг. локр.)</label>
+                <label><input type="checkbox" id="scaleOther" checked> Остальные</label>
+            </div>
         </div>
         <div id="scalesDynamicZone"></div>
         <div id="scalesMessageArea" class="message-area"></div>
@@ -269,23 +286,18 @@
 
 <script>
     (function() {
-        // ---------- АУДИО СИНТЕЗАТОР (sawtooth) ----------
+        // ---------- АУДИО ----------
         let audioCtx = null;
         let currentSources = [];
-
         function initAudio() {
             if (audioCtx) return audioCtx;
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             return audioCtx;
         }
-
         function stopAllSounds() {
-            currentSources.forEach(src => {
-                try { src.stop(); src.disconnect(); } catch(e) {}
-            });
+            currentSources.forEach(src => { try { src.stop(); src.disconnect(); } catch(e) {} });
             currentSources = [];
         }
-
         function playNote(freq, startTime, duration, volume = 0.35) {
             const ctx = audioCtx;
             const osc = ctx.createOscillator();
@@ -296,30 +308,22 @@
             filter.type = 'lowpass';
             filter.frequency.value = 1800;
             filter.Q.value = 2;
-
             gain.gain.setValueAtTime(0.001, startTime);
             gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.02);
             gain.gain.exponentialRampToValueAtTime(volume * 0.4, startTime + 0.15);
             gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
-
             filter.frequency.setValueAtTime(1500, startTime);
             filter.frequency.exponentialRampToValueAtTime(600, startTime + 0.5);
             filter.frequency.exponentialRampToValueAtTime(300, startTime + duration);
-
             osc.connect(filter);
             filter.connect(gain);
             gain.connect(ctx.destination);
-
             osc.start(startTime);
             osc.stop(startTime + duration);
             currentSources.push(osc);
-            osc.onended = () => {
-                const idx = currentSources.indexOf(osc);
-                if (idx !== -1) currentSources.splice(idx, 1);
-            };
+            osc.onended = () => { const idx = currentSources.indexOf(osc); if (idx !== -1) currentSources.splice(idx, 1); };
             return osc;
         }
-
         async function playFrequencies(frequencies, duration = 1.8) {
             const ctx = initAudio();
             if (ctx.state === 'suspended') await ctx.resume();
@@ -327,33 +331,34 @@
             const now = ctx.currentTime;
             frequencies.forEach(freq => playNote(freq, now, duration, 0.35));
         }
-
-        // Воспроизведение гаммы вверх и вниз
+        // Гамма вверх-вниз с правильной верхней октавой
         async function playScaleUpDown(frequencies) {
             const ctx = initAudio();
             if (ctx.state === 'suspended') await ctx.resume();
             stopAllSounds();
+            // Поднимаем последнюю ноту на октаву, если она равна первой
+            let fixedFreqs = [...frequencies];
+            if (fixedFreqs.length > 1 && Math.abs(fixedFreqs[fixedFreqs.length-1] - fixedFreqs[0]) < 0.1) {
+                fixedFreqs[fixedFreqs.length-1] = fixedFreqs[0] * 2;
+            }
             const startTime = ctx.currentTime;
             const durationPerNote = 0.45;
             const gap = 0.05;
             const step = durationPerNote + gap;
-            // вверх
-            for (let i = 0; i < frequencies.length; i++) {
-                playNote(frequencies[i], startTime + i * step, durationPerNote, 0.3);
+            for (let i = 0; i < fixedFreqs.length; i++) {
+                playNote(fixedFreqs[i], startTime + i * step, durationPerNote, 0.3);
             }
-            // вниз (пропускаем последнюю ноту, чтобы не дублировать)
-            for (let i = frequencies.length - 2; i >= 0; i--) {
-                playNote(frequencies[i], startTime + (frequencies.length - 1 + (frequencies.length - 1 - i)) * step, durationPerNote, 0.3);
+            for (let i = fixedFreqs.length - 2; i >= 0; i--) {
+                playNote(fixedFreqs[i], startTime + (fixedFreqs.length - 1 + (fixedFreqs.length - 1 - i)) * step, durationPerNote, 0.3);
             }
         }
 
-        // ---------- ПРЕОБРАЗОВАНИЕ НОТ В ЧАСТОТЫ ----------
+        // ---------- НОТЫ В ЧАСТОТЫ ----------
         const noteToSemitone = {
             'c':0,'cis':1,'des':1,'d':2,'dis':3,'es':3,'e':4,'f':5,'fis':6,'ges':6,'g':7,'gis':8,'as':8,'a':9,
-            'ais':10,'hes':10,'h':11,'ces':-1,'his':12,'heses':9,'fes':4,'eises':5,'asas':7,'heses':9
+            'ais':10,'hes':10,'h':11,'ces':-1,'his':12,'heses':9,'fes':4,'eises':5,'asas':7
         };
         const C4_FREQ = 261.63;
-
         function noteToFreq(noteName) {
             let name = noteName.toLowerCase();
             const fix = { 'heses':'a', 'heises':'his', 'asas':'ges', 'fes':'e', 'ces':'h', 'eses':'d', 'aisis':'his' };
@@ -362,336 +367,272 @@
             if (semi === undefined) return C4_FREQ;
             return C4_FREQ * Math.pow(2, semi / 12);
         }
+        function chordNotesToFreqs(notesStr) { return notesStr.trim().split(/\s+/).map(noteToFreq); }
 
-        function chordNotesToFreqs(notesStr) {
-            return notesStr.trim().split(/\s+/).map(noteToFreq);
-        }
-
-        // ---------- ДАННЫЕ ИЗ ФАЙЛА ----------
-        // Аккорды с полной информацией для 3 колонок
+        // ---------- ДАННЫЕ АККОРДОВ ----------
         const chordItems = [
-            { name: "мажорное трезвучие", seventh: "нет", quality: "мажорный", inversion: "трезвучие", notes: "c e g" },
-            { name: "минорное трезвучие", seventh: "нет", quality: "минорный", inversion: "трезвучие", notes: "c es g" },
-            { name: "минорный секстаккорд", seventh: "нет", quality: "минорный", inversion: "секстаккорд", notes: "c e a" },
-            { name: "мажорный секстаккорд", seventh: "нет", quality: "мажорный", inversion: "секстаккорд", notes: "c es as" },
-            { name: "уменьшенное трезвучие", seventh: "нет", quality: "уменьшенный", inversion: "трезвучие", notes: "c es ges" },
-            { name: "увеличенное трезвучие", seventh: "нет", quality: "увеличенный", inversion: "трезвучие", notes: "c e gis" },
-            { name: "мажорный квартсекст аккорд", seventh: "нет", quality: "мажорный", inversion: "квартсекстаккорд", notes: "c f a" },
-            { name: "минорный квартсекстаккорд", seventh: "нет", quality: "минорный", inversion: "квартсекстаккорд", notes: "c f as" },
-            { name: "малый мажорный септаккорд", seventh: "малая", quality: "мажорный", inversion: "септаккорд", notes: "c e g hes" },
-            { name: "малый минорный септаккорд", seventh: "малая", quality: "минорный", inversion: "септаккорд", notes: "c es g hes" },
-            { name: "малый уменьшенный септаккорд", seventh: "малая", quality: "уменьшенный", inversion: "септаккорд", notes: "c es ges hes" },
-            { name: "малый увеличенный септаккорд", seventh: "малая", quality: "увеличенный", inversion: "септаккорд", notes: "c e gis hes" },
-            { name: "малый мажорный квинтсекстаккорд", seventh: "малая", quality: "мажорный", inversion: "квинтсекстаккорд", notes: "c es g as" },
-            { name: "малый минорный квинтсекстаккорд", seventh: "малая", quality: "минорный", inversion: "квинтсекстаккорд", notes: "c e g a" },
-            { name: "малый уменьшенный квинтсекстаккорд", seventh: "малая", quality: "уменьшенный", inversion: "квинтсекстаккорд", notes: "c es g a" },
-            { name: "малый увеличенный квинтсекстаккорд", seventh: "малая", quality: "увеличенный", inversion: "квинтсекстаккорд", notes: "c e ges as" },
-            { name: "малый мажорный терцквартаккорд", seventh: "малая", quality: "мажорный", inversion: "терцквартаккорд", notes: "c es f a" },
-            { name: "малый минорный терцквартаккорд", seventh: "малая", quality: "минорный", inversion: "терцквартаккорд", notes: "c es f as" },
-            { name: "малый уменьшенный терцквартаккорд", seventh: "малая", quality: "уменьшенный", inversion: "терцквартаккорд", notes: "c e fis a" },
-            { name: "малый мажорный секундаккорд", seventh: "малая", quality: "мажорный", inversion: "секундаккорд", notes: "c d fis a" },
-            { name: "малый минорный секундаккорд", seventh: "малая", quality: "минорный", inversion: "секундаккорд", notes: "c d f a" },
-            { name: "малый уменьшенный секундаккорд", seventh: "малая", quality: "уменьшенный", inversion: "секундаккорд", notes: "c d f as" },
-            { name: "малый увеличенный секундаккорд", seventh: "малая", quality: "увеличенный", inversion: "секундаккорд", notes: "c d fis ais" },
-            { name: "большой мажорный септаккорд", seventh: "большая", quality: "мажорный", inversion: "септаккорд", notes: "c e g h" },
-            { name: "большой минорный септаккорд", seventh: "большая", quality: "минорный", inversion: "септаккорд", notes: "c es g h" },
-            { name: "большой уменьшенный септаккорд", seventh: "большая", quality: "уменьшенный", inversion: "септаккорд", notes: "c es ges h" },
-            { name: "большой увеличенный септаккорд", seventh: "большая", quality: "увеличенный", inversion: "септаккорд", notes: "c e gis h" },
-            { name: "большой мажорный квинтсекстаккорд", seventh: "большая", quality: "мажорный", inversion: "квинтсекстаккорд", notes: "c es g as" },
-            { name: "большой минорный квинтсекстаккорд", seventh: "большая", quality: "минорный", inversion: "квинтсекстаккорд", notes: "c e gis a" },
-            { name: "большой уменьшенный квинтсекстаккорд", seventh: "большая", quality: "уменьшенный", inversion: "квинтсекстаккорд", notes: "c es gis a" },
-            { name: "большой увеличенный квинтсекстаккорд", seventh: "большая", quality: "увеличенный", inversion: "квинтсекстаккорд", notes: "c e g as" },
-            { name: "большой мажорный терцквартаккорд", seventh: "большая", quality: "мажорный", inversion: "терцквартаккорд", notes: "c e f a" },
-            { name: "большой минорный терцквартаккорд", seventh: "большая", quality: "минорный", inversion: "терцквартаккорд", notes: "c e f as" },
-            { name: "большой уменьшенный терцквартаккорд", seventh: "большая", quality: "уменьшенный", inversion: "терцквартаккорд", notes: "c eis fis a" },
-            { name: "большой увеличенный терцквартаккорд", seventh: "большая", quality: "увеличенный", inversion: "терцквартаккорд", notes: "c es fes as" },
-            { name: "большой мажорный секундаккорд", seventh: "большая", quality: "мажорный", inversion: "секундаккорд", notes: "c des f as" },
-            { name: "большой минорный секундаккорд", seventh: "большая", quality: "минорный", inversion: "секундаккорд", notes: "c des fes as" },
-            { name: "большой уменьшенный секундаккорд", seventh: "большая", quality: "уменьшенный", inversion: "секундаккорд", notes: "c des fes ases" },
-            { name: "большой увеличенный секундаккорд", seventh: "большая", quality: "увеличенный", inversion: "секундаккорд", notes: "c des f a" },
-            { name: "уменьшенный уменьшенный септаккорд", seventh: "малая", quality: "уменьшенный", inversion: "септаккорд", notes: "c es ges heses" },
-            { name: "увеличенный увеличенный септаккорд", seventh: "большая", quality: "увеличенный", inversion: "септаккорд", notes: "c e gis his" }
+            { name:"мажорное трезвучие", seventh:"нет", quality:"мажорный", inversion:"трезвучие", notes:"c e g", type:"triad", augDim:"none" },
+            { name:"минорное трезвучие", seventh:"нет", quality:"минорный", inversion:"трезвучие", notes:"c es g", type:"triad", augDim:"none" },
+            { name:"минорный секстаккорд", seventh:"нет", quality:"минорный", inversion:"секстаккорд", notes:"c e a", type:"triad", augDim:"none" },
+            { name:"мажорный секстаккорд", seventh:"нет", quality:"мажорный", inversion:"секстаккорд", notes:"c es as", type:"triad", augDim:"none" },
+            { name:"уменьшенное трезвучие", seventh:"нет", quality:"уменьшенный", inversion:"трезвучие", notes:"c es ges", type:"triad", augDim:"dim" },
+            { name:"увеличенное трезвучие", seventh:"нет", quality:"увеличенный", inversion:"трезвучие", notes:"c e gis", type:"triad", augDim:"aug" },
+            { name:"мажорный квартсекст аккорд", seventh:"нет", quality:"мажорный", inversion:"квартсекстаккорд", notes:"c f a", type:"triad", augDim:"none" },
+            { name:"минорный квартсекстаккорд", seventh:"нет", quality:"минорный", inversion:"квартсекстаккорд", notes:"c f as", type:"triad", augDim:"none" },
+            { name:"малый мажорный септаккорд", seventh:"малая", quality:"мажорный", inversion:"септаккорд", notes:"c e g hes", type:"seventh", augDim:"none" },
+            { name:"малый минорный септаккорд", seventh:"малая", quality:"минорный", inversion:"септаккорд", notes:"c es g hes", type:"seventh", augDim:"none" },
+            { name:"малый уменьшенный септаккорд", seventh:"малая", quality:"уменьшенный", inversion:"септаккорд", notes:"c es ges hes", type:"seventh", augDim:"dim" },
+            { name:"малый увеличенный септаккорд", seventh:"малая", quality:"увеличенный", inversion:"септаккорд", notes:"c e gis hes", type:"seventh", augDim:"aug" },
+            { name:"малый мажорный квинтсекстаккорд", seventh:"малая", quality:"мажорный", inversion:"квинтсекстаккорд", notes:"c es g as", type:"seventh", augDim:"none" },
+            { name:"малый минорный квинтсекстаккорд", seventh:"малая", quality:"минорный", inversion:"квинтсекстаккорд", notes:"c e g a", type:"seventh", augDim:"none" },
+            { name:"малый уменьшенный квинтсекстаккорд", seventh:"малая", quality:"уменьшенный", inversion:"квинтсекстаккорд", notes:"c es g a", type:"seventh", augDim:"dim" },
+            { name:"малый увеличенный квинтсекстаккорд", seventh:"малая", quality:"увеличенный", inversion:"квинтсекстаккорд", notes:"c e ges as", type:"seventh", augDim:"aug" },
+            { name:"малый мажорный терцквартаккорд", seventh:"малая", quality:"мажорный", inversion:"терцквартаккорд", notes:"c es f a", type:"seventh", augDim:"none" },
+            { name:"малый минорный терцквартаккорд", seventh:"малая", quality:"минорный", inversion:"терцквартаккорд", notes:"c es f as", type:"seventh", augDim:"none" },
+            { name:"малый уменьшенный терцквартаккорд", seventh:"малая", quality:"уменьшенный", inversion:"терцквартаккорд", notes:"c e fis a", type:"seventh", augDim:"dim" },
+            { name:"малый мажорный секундаккорд", seventh:"малая", quality:"мажорный", inversion:"секундаккорд", notes:"c d fis a", type:"seventh", augDim:"none" },
+            { name:"малый минорный секундаккорд", seventh:"малая", quality:"минорный", inversion:"секундаккорд", notes:"c d f a", type:"seventh", augDim:"none" },
+            { name:"малый уменьшенный секундаккорд", seventh:"малая", quality:"уменьшенный", inversion:"секундаккорд", notes:"c d f as", type:"seventh", augDim:"dim" },
+            { name:"малый увеличенный секундаккорд", seventh:"малая", quality:"увеличенный", inversion:"секундаккорд", notes:"c d fis ais", type:"seventh", augDim:"aug" },
+            { name:"большой мажорный септаккорд", seventh:"большая", quality:"мажорный", inversion:"септаккорд", notes:"c e g h", type:"seventh", augDim:"none" },
+            { name:"большой минорный септаккорд", seventh:"большая", quality:"минорный", inversion:"септаккорд", notes:"c es g h", type:"seventh", augDim:"none" },
+            { name:"большой уменьшенный септаккорд", seventh:"большая", quality:"уменьшенный", inversion:"септаккорд", notes:"c es ges h", type:"seventh", augDim:"dim" },
+            { name:"большой увеличенный септаккорд", seventh:"большая", quality:"увеличенный", inversion:"септаккорд", notes:"c e gis h", type:"seventh", augDim:"aug" },
+            { name:"большой мажорный квинтсекстаккорд", seventh:"большая", quality:"мажорный", inversion:"квинтсекстаккорд", notes:"c es g as", type:"seventh", augDim:"none" },
+            { name:"большой минорный квинтсекстаккорд", seventh:"большая", quality:"минорный", inversion:"квинтсекстаккорд", notes:"c e gis a", type:"seventh", augDim:"none" },
+            { name:"большой уменьшенный квинтсекстаккорд", seventh:"большая", quality:"уменьшенный", inversion:"квинтсекстаккорд", notes:"c es gis a", type:"seventh", augDim:"dim" },
+            { name:"большой увеличенный квинтсекстаккорд", seventh:"большая", quality:"увеличенный", inversion:"квинтсекстаккорд", notes:"c e g as", type:"seventh", augDim:"aug" },
+            { name:"большой мажорный терцквартаккорд", seventh:"большая", quality:"мажорный", inversion:"терцквартаккорд", notes:"c e f a", type:"seventh", augDim:"none" },
+            { name:"большой минорный терцквартаккорд", seventh:"большая", quality:"минорный", inversion:"терцквартаккорд", notes:"c e f as", type:"seventh", augDim:"none" },
+            { name:"большой уменьшенный терцквартаккорд", seventh:"большая", quality:"уменьшенный", inversion:"терцквартаккорд", notes:"c eis fis a", type:"seventh", augDim:"dim" },
+            { name:"большой увеличенный терцквартаккорд", seventh:"большая", quality:"увеличенный", inversion:"терцквартаккорд", notes:"c es fes as", type:"seventh", augDim:"aug" },
+            { name:"большой мажорный секундаккорд", seventh:"большая", quality:"мажорный", inversion:"секундаккорд", notes:"c des f as", type:"seventh", augDim:"none" },
+            { name:"большой минорный секундаккорд", seventh:"большая", quality:"минорный", inversion:"секундаккорд", notes:"c des fes as", type:"seventh", augDim:"none" },
+            { name:"большой уменьшенный секундаккорд", seventh:"большая", quality:"уменьшенный", inversion:"секундаккорд", notes:"c des fes ases", type:"seventh", augDim:"dim" },
+            { name:"большой увеличенный секундаккорд", seventh:"большая", quality:"увеличенный", inversion:"секундаккорд", notes:"c des f a", type:"seventh", augDim:"aug" },
+            { name:"уменьшенный уменьшенный септаккорд", seventh:"малая", quality:"уменьшенный", inversion:"септаккорд", notes:"c es ges heses", type:"seventh", augDim:"dim" },
+            { name:"увеличенный увеличенный септаккорд", seventh:"большая", quality:"увеличенный", inversion:"септаккорд", notes:"c e gis his", type:"seventh", augDim:"aug" }
         ];
 
-        const chordsList = chordItems.map(ch => ({
-            name: ch.name,
-            seventh: ch.seventh,
-            quality: ch.quality,
-            inversion: ch.inversion,
-            freqs: chordNotesToFreqs(ch.notes)
-        }));
+        function filterChords() {
+            const triadsOn = document.getElementById('chordTriads').checked;
+            const seventhsOn = document.getElementById('chordSevenths').checked;
+            const augOn = document.getElementById('chordAug').checked;
+            const dimOn = document.getElementById('chordDim').checked;
+            const inversionsOn = document.getElementById('chordInversions').checked;
+            return chordItems.filter(ch => {
+                if (ch.type === 'triad' && !triadsOn) return false;
+                if (ch.type === 'seventh' && !seventhsOn) return false;
+                if (ch.augDim === 'aug' && !augOn) return false;
+                if (ch.augDim === 'dim' && !dimOn) return false;
+                if (!inversionsOn && (ch.inversion !== 'трезвучие' && ch.inversion !== 'септаккорд')) return false;
+                return true;
+            });
+        }
 
-        // Интервалы (величина + качество)
+        // Интервалы без изменений
         const intervalRaw = [
-            { name: "чистая прима", size: "прима", quality: "чистая", notes: ["c","c"] },
-            { name: "малая секунда", size: "секунда", quality: "малая", notes: ["c","des"] },
-            { name: "большая секунда", size: "секунда", quality: "большая", notes: ["c","d"] },
-            { name: "малая терция", size: "терция", quality: "малая", notes: ["c","es"] },
-            { name: "большая терция", size: "терция", quality: "большая", notes: ["c","e"] },
-            { name: "чистая кварта", size: "кварта", quality: "чистая", notes: ["c","f"] },
-            { name: "тритон", size: "тритон", quality: "тритон", notes: ["c","fis"] },
-            { name: "чистая квинта", size: "квинта", quality: "чистая", notes: ["c","g"] },
-            { name: "малая секста", size: "секста", quality: "малая", notes: ["c","as"] },
-            { name: "большая секста", size: "секста", quality: "большая", notes: ["c","a"] },
-            { name: "малая септима", size: "септима", quality: "малая", notes: ["c","hes"] },
-            { name: "большая септима", size: "септима", quality: "большая", notes: ["c","h"] },
-            { name: "чистая октава", size: "октава", quality: "чистая", notes: ["c","c"] }
+            { name:"чистая прима", size:"прима", quality:"чистая", notes:["c","c"] },
+            { name:"малая секунда", size:"секунда", quality:"малая", notes:["c","des"] },
+            { name:"большая секунда", size:"секунда", quality:"большая", notes:["c","d"] },
+            { name:"малая терция", size:"терция", quality:"малая", notes:["c","es"] },
+            { name:"большая терция", size:"терция", quality:"большая", notes:["c","e"] },
+            { name:"чистая кварта", size:"кварта", quality:"чистая", notes:["c","f"] },
+            { name:"тритон", size:"тритон", quality:"тритон", notes:["c","fis"] },
+            { name:"чистая квинта", size:"квинта", quality:"чистая", notes:["c","g"] },
+            { name:"малая секста", size:"секста", quality:"малая", notes:["c","as"] },
+            { name:"большая секста", size:"секста", quality:"большая", notes:["c","a"] },
+            { name:"малая септима", size:"септима", quality:"малая", notes:["c","hes"] },
+            { name:"большая септима", size:"септима", quality:"большая", notes:["c","h"] },
+            { name:"чистая октава", size:"октава", quality:"чистая", notes:["c","c"] }
         ];
         const intervalsList = intervalRaw.map(i => {
-            let freq1 = noteToFreq(i.notes[0]);
-            let freq2 = noteToFreq(i.notes[1]);
-            if (i.name === "чистая октава") freq2 = freq1 * 2;
-            return { name: i.name, size: i.size, quality: i.quality, freqs: [freq1, freq2] };
+            let f1 = noteToFreq(i.notes[0]), f2 = noteToFreq(i.notes[1]);
+            if (i.name === "чистая октава") f2 = f1 * 2;
+            return { name:i.name, size:i.size, quality:i.quality, freqs:[f1,f2] };
         });
 
-        // Лады (гаммы)
+        // Лады с категориями
         const scaleRaw = [
-            { name: "натуральный мажор (ионийский)", notes: "c d e f g a h c" },
-            { name: "натуральный минор (эолийский)", notes: "c d es f g as hes c" },
-            { name: "гармонический мажор", notes: "c d e f g as h c" },
-            { name: "гармонический минор", notes: "c d es f g as h c" },
-            { name: "мелодический мажор", notes: "c d e f g a h c" },
-            { name: "мелодический минор", notes: "c d es f g a h c" },
-            { name: "мажорная пентатоника", notes: "c d e g a c" },
-            { name: "минорная пентатоника", notes: "c es f g hes c" },
-            { name: "лидийский", notes: "c d e fis g a h c" },
-            { name: "миксолидийский", notes: "c d e f g a hes c" },
-            { name: "дорийский", notes: "c d es f g a hes c" },
-            { name: "фригийский", notes: "c des es f g as hes c" },
-            { name: "локрийский", notes: "c des es f ges as hes c" },
-            { name: "блюзовый", notes: "c es f ges g hes c" },
-            { name: "уменьшенный (полутон-тон)", notes: "c des es fes ges g a hes c" },
-            { name: "уменьшенный (тон-полутон)", notes: "c d es f ges as a h c" },
-            { name: "целотоновый", notes: "c d e fis as hes c" },
-            { name: "альтерированный мажор", notes: "c d dis e f fis g a h c" },
-            { name: "альтерированный минор", notes: "c d es f fis g as hes h c" },
-            { name: "хроматический", notes: "c cis d dis e f fis g gis a ais h c" },
-            { name: "дважды гармонический мажор", notes: "c des e f g as h c" },
-            { name: "дважды гармонический минор", notes: "c d es fis g as h c" }
+            { name:"натуральный мажор (ионийский)", notes:"c d e f g a h c", category:"natural" },
+            { name:"натуральный минор (эолийский)", notes:"c d es f g as hes c", category:"natural" },
+            { name:"гармонический мажор", notes:"c d e f g as h c", category:"harmonic" },
+            { name:"гармонический минор", notes:"c d es f g as h c", category:"harmonic" },
+            { name:"мелодический мажор", notes:"c d e f g a h c", category:"melodic" },
+            { name:"мелодический минор", notes:"c d es f g a h c", category:"melodic" },
+            { name:"мажорная пентатоника", notes:"c d e g a c", category:"folk" },
+            { name:"минорная пентатоника", notes:"c es f g hes c", category:"folk" },
+            { name:"лидийский", notes:"c d e fis g a h c", category:"folk" },
+            { name:"миксолидийский", notes:"c d e f g a hes c", category:"folk" },
+            { name:"дорийский", notes:"c d es f g a hes c", category:"folk" },
+            { name:"фригийский", notes:"c des es f g as hes c", category:"folk" },
+            { name:"локрийский", notes:"c des es f ges as hes c", category:"folk" },
+            { name:"блюзовый", notes:"c es f ges g hes c", category:"other" },
+            { name:"уменьшенный (полутон-тон)", notes:"c des es fes ges g a hes c", category:"other" },
+            { name:"уменьшенный (тон-полутон)", notes:"c d es f ges as a h c", category:"other" },
+            { name:"целотоновый", notes:"c d e fis as hes c", category:"other" },
+            { name:"альтерированный мажор", notes:"c d dis e f fis g a h c", category:"other" },
+            { name:"альтерированный минор", notes:"c d es f fis g as hes h c", category:"other" },
+            { name:"хроматический", notes:"c cis d dis e f fis g gis a ais h c", category:"other" },
+            { name:"дважды гармонический мажор", notes:"c des e f g as h c", category:"harmonic" },
+            { name:"дважды гармонический минор", notes:"c d es fis g as h c", category:"harmonic" }
         ];
-        const scalesList = scaleRaw.map(s => ({
-            name: s.name,
-            freqs: s.notes.split(/\s+/).map(noteToFreq)
-        }));
-
-        // Защита от повторов
-        class NoRepeatHistory {
-            constructor(max=5) { this.max = max; this.history = []; }
-            add(item) { this.history.unshift(item); if (this.history.length > this.max) this.history.pop(); }
-            isRepeat(item) { return this.history.includes(item); }
-            getRandomUnique(list, getKey) {
-                const candidates = list.filter(item => !this.isRepeat(getKey(item)));
-                if (!candidates.length) return list[Math.floor(Math.random() * list.length)];
-                return candidates[Math.floor(Math.random() * candidates.length)];
-            }
+        function filterScales() {
+            const natural = document.getElementById('scaleNatural').checked;
+            const harmonic = document.getElementById('scaleHarmonic').checked;
+            const melodic = document.getElementById('scaleMelodic').checked;
+            const folk = document.getElementById('scaleFolk').checked;
+            const other = document.getElementById('scaleOther').checked;
+            return scaleRaw.filter(s => {
+                if (s.category === 'natural' && !natural) return false;
+                if (s.category === 'harmonic' && !harmonic) return false;
+                if (s.category === 'melodic' && !melodic) return false;
+                if (s.category === 'folk' && !folk) return false;
+                if (s.category === 'other' && !other) return false;
+                return true;
+            }).map(s => ({ name:s.name, freqs: s.notes.split(/\s+/).map(noteToFreq) }));
         }
+
+        // История
+        class NoRepeatHistory { constructor(max=5) { this.max=max; this.history=[]; } add(i){ this.history.unshift(i); if(this.history.length>this.max) this.history.pop(); } isRepeat(i){ return this.history.includes(i); } getRandomUnique(list, getKey) { let candidates = list.filter(i=>!this.isRepeat(getKey(i))); if(!candidates.length) candidates=list; return candidates[Math.floor(Math.random()*candidates.length)]; } }
         const chordHist = new NoRepeatHistory(5);
         const intervalHist = new NoRepeatHistory(5);
         const scaleHist = new NoRepeatHistory(5);
 
-        // Состояние
-        let currentChord = null, currentInterval = null, currentScale = null;
+        let currentChord=null, currentInterval=null, currentScale=null;
         let chordsActive=false, intervalsActive=false, scalesActive=false;
 
-        // --- Аккорды (3 колонки) ---
-        function selectRandomChord() {
-            const chord = chordHist.getRandomUnique(chordsList, c => c.name);
-            chordHist.add(chord.name);
-            return chord;
-        }
-
+        // Аккорды UI
         function renderChordsUI() {
             const zone = document.getElementById('chordsDynamicZone');
             zone.innerHTML = `
                 <div class="selector-row">
-                    <div class="selector-column"><h3>Септима</h3><select id="seventhSelect">
-                        <option value="нет">нет</option><option value="малая">малая</option><option value="большая">большая</option>
-                    </select></div>
-                    <div class="selector-column"><h3>Основа</h3><select id="qualitySelect">
-                        <option value="мажорный">мажорный</option><option value="минорный">минорный</option>
-                        <option value="увеличенный">увеличенный</option><option value="уменьшенный">уменьшенный</option>
-                    </select></div>
-                    <div class="selector-column"><h3>Обращение</h3><select id="inversionSelect">
-                        <option value="трезвучие">трезвучие</option><option value="секстаккорд">секстаккорд</option>
-                        <option value="квартсекстаккорд">квартсекстаккорд</option><option value="септаккорд">септаккорд</option>
-                        <option value="квинтсекстаккорд">квинтсекстаккорд</option><option value="терцквартаккорд">терцквартаккорд</option>
-                        <option value="секундаккорд">секундаккорд</option>
-                    </select></div>
+                    <div class="selector-column"><h3>Септима</h3><select id="seventhSelect"><option value="нет">нет</option><option value="малая">малая</option><option value="большая">большая</option></select></div>
+                    <div class="selector-column"><h3>Основа</h3><select id="qualitySelect"><option value="мажорный">мажорный</option><option value="минорный">минорный</option><option value="увеличенный">увеличенный</option><option value="уменьшенный">уменьшенный</option></select></div>
+                    <div class="selector-column"><h3>Обращение</h3><select id="inversionSelect"><option value="трезвучие">трезвучие</option><option value="секстаккорд">секстаккорд</option><option value="квартсекстаккорд">квартсекстаккорд</option><option value="септаккорд">септаккорд</option><option value="квинтсекстаккорд">квинтсекстаккорд</option><option value="терцквартаккорд">терцквартаккорд</option><option value="секундаккорд">секундаккорд</option></select></div>
                 </div>
                 <div class="submit-area"><button class="check-btn" id="chordsCheckBtn">✅ Проверить</button></div>
             `;
             document.getElementById('chordsCheckBtn').addEventListener('click', checkChordAnswer);
         }
-
-        function startChords() {
-            chordsActive = true;
-            currentChord = selectRandomChord();
-            renderChordsUI();
-            document.getElementById('chordsMessageArea').innerHTML = '';
+        function selectRandomChord() {
+            const filtered = filterChords();
+            if (!filtered.length) return null;
+            const chord = chordHist.getRandomUnique(filtered, c=>c.name);
+            chordHist.add(chord.name);
+            return { ...chord, freqs: chordNotesToFreqs(chord.notes) };
         }
-
+        function startChords() { chordsActive=true; currentChord=selectRandomChord(); renderChordsUI(); document.getElementById('chordsMessageArea').innerHTML=''; }
         async function playChord() { if(currentChord) await playFrequencies(currentChord.freqs); }
-
         function checkChordAnswer() {
-            if (!currentChord) return;
-            const selSeventh = document.getElementById('seventhSelect').value;
-            const selQuality = document.getElementById('qualitySelect').value;
-            const selInversion = document.getElementById('inversionSelect').value;
-            const ok = (selSeventh === currentChord.seventh && selQuality === currentChord.quality && selInversion === currentChord.inversion);
-            const msgDiv = document.getElementById('chordsMessageArea');
-            msgDiv.innerHTML = '';
-            const fb = document.createElement('div');
-            fb.className = 'feedback-text';
-            fb.textContent = ok ? '✅ Верно! Отлично!' : `❌ Неправильно. Это был: ${currentChord.name}.`;
+            if(!currentChord) return;
+            const selSeventh=document.getElementById('seventhSelect').value;
+            const selQuality=document.getElementById('qualitySelect').value;
+            const selInversion=document.getElementById('inversionSelect').value;
+            const ok = (selSeventh===currentChord.seventh && selQuality===currentChord.quality && selInversion===currentChord.inversion);
+            const msgDiv=document.getElementById('chordsMessageArea');
+            msgDiv.innerHTML='';
+            const fb=document.createElement('div'); fb.className='feedback-text';
+            fb.textContent=ok? '✅ Верно! Отлично!' : `❌ Неправильно. Это был: ${currentChord.name}.`;
             msgDiv.appendChild(fb);
-            const again = document.createElement('button');
-            again.textContent = '🔄 Ещё раз';
-            again.className = 'again-btn';
-            again.onclick = () => {
-                currentChord = selectRandomChord();
-                msgDiv.innerHTML = '<div class="feedback-text">🎵 Новый аккорд! Нажми "Сыграть".</div>';
-                setTimeout(() => msgDiv.innerHTML = '', 2000);
-            };
+            const again=document.createElement('button'); again.textContent='🔄 Ещё раз'; again.className='again-btn';
+            again.onclick=()=>{ currentChord=selectRandomChord(); msgDiv.innerHTML='<div class="feedback-text">🎵 Новый аккорд! Нажми "Сыграть".</div>'; setTimeout(()=>msgDiv.innerHTML='',2000); };
             msgDiv.appendChild(again);
         }
 
-        // --- Интервалы (2 колонки) ---
-        function selectRandomInterval() {
-            const interval = intervalHist.getRandomUnique(intervalsList, i => i.name);
-            intervalHist.add(interval.name);
-            return interval;
-        }
-
+        // Интервалы
         function renderIntervalsUI() {
-            const zone = document.getElementById('intervalsDynamicZone');
-            zone.innerHTML = `
+            const zone=document.getElementById('intervalsDynamicZone');
+            zone.innerHTML=`
                 <div class="selector-row">
-                    <div class="selector-column"><h3>Величина</h3><select id="intervalSizeSelect">
-                        <option value="прима">прима</option><option value="секунда">секунда</option><option value="терция">терция</option>
-                        <option value="кварта">кварта</option><option value="квинта">квинта</option><option value="секста">секста</option>
-                        <option value="септима">септима</option><option value="октава">октава</option><option value="тритон">тритон</option>
-                    </select></div>
-                    <div class="selector-column"><h3>Качество</h3><select id="intervalQualitySelect">
-                        <option value="чистая">чистая</option><option value="малая">малая</option><option value="большая">большая</option><option value="тритон">тритон</option>
-                    </select></div>
+                    <div class="selector-column"><h3>Величина</h3><select id="intervalSizeSelect"><option value="прима">прима</option><option value="секунда">секунда</option><option value="терция">терция</option><option value="кварта">кварта</option><option value="квинта">квинта</option><option value="секста">секста</option><option value="септима">септима</option><option value="октава">октава</option><option value="тритон">тритон</option></select></div>
+                    <div class="selector-column"><h3>Качество</h3><select id="intervalQualitySelect"><option value="чистая">чистая</option><option value="малая">малая</option><option value="большая">большая</option><option value="тритон">тритон</option></select></div>
                 </div>
                 <div class="submit-area"><button class="check-btn" id="intervalCheckBtn">✅ Проверить</button></div>
             `;
-            const sizeSel = document.getElementById('intervalSizeSelect');
-            const qualSel = document.getElementById('intervalQualitySelect');
-            const updateQual = () => {
-                if (sizeSel.value === 'тритон') { qualSel.value = 'тритон'; qualSel.disabled = true; }
-                else { qualSel.disabled = false; if(qualSel.value === 'тритон') qualSel.value = 'чистая'; }
-            };
-            sizeSel.addEventListener('change', updateQual);
-            updateQual();
+            const sizeSel=document.getElementById('intervalSizeSelect');
+            const qualSel=document.getElementById('intervalQualitySelect');
+            const update=()=>{ if(sizeSel.value==='тритон'){ qualSel.value='тритон'; qualSel.disabled=true; } else { qualSel.disabled=false; if(qualSel.value==='тритон') qualSel.value='чистая'; } };
+            sizeSel.addEventListener('change',update); update();
             document.getElementById('intervalCheckBtn').addEventListener('click', checkIntervalAnswer);
         }
-
-        function startIntervals() {
-            intervalsActive = true;
-            currentInterval = selectRandomInterval();
-            renderIntervalsUI();
-            document.getElementById('intervalsMessageArea').innerHTML = '';
-        }
-
+        function selectRandomInterval() { const interval=intervalHist.getRandomUnique(intervalsList,i=>i.name); intervalHist.add(interval.name); return interval; }
+        function startIntervals() { intervalsActive=true; currentInterval=selectRandomInterval(); renderIntervalsUI(); document.getElementById('intervalsMessageArea').innerHTML=''; }
         async function playInterval() { if(currentInterval) await playFrequencies(currentInterval.freqs); }
-
         function checkIntervalAnswer() {
-            if (!currentInterval) return;
-            const size = document.getElementById('intervalSizeSelect').value;
-            let quality = document.getElementById('intervalQualitySelect').value;
-            if (size === 'тритон') quality = 'тритон';
-            const ok = (size === currentInterval.size && quality === currentInterval.quality);
-            const msgDiv = document.getElementById('intervalsMessageArea');
-            msgDiv.innerHTML = '';
-            const fb = document.createElement('div');
-            fb.className = 'feedback-text';
-            fb.textContent = ok ? '✅ Верно! Отлично!' : `❌ Неправильно. Это был: ${currentInterval.name}.`;
+            if(!currentInterval) return;
+            const size=document.getElementById('intervalSizeSelect').value;
+            let quality=document.getElementById('intervalQualitySelect').value;
+            if(size==='тритон') quality='тритон';
+            const ok=(size===currentInterval.size && quality===currentInterval.quality);
+            const msgDiv=document.getElementById('intervalsMessageArea');
+            msgDiv.innerHTML='';
+            const fb=document.createElement('div'); fb.className='feedback-text';
+            fb.textContent=ok? '✅ Верно! Отлично!' : `❌ Неправильно. Это был: ${currentInterval.name}.`;
             msgDiv.appendChild(fb);
-            const again = document.createElement('button');
-            again.textContent = '🔄 Ещё раз';
-            again.className = 'again-btn';
-            again.onclick = () => {
-                currentInterval = selectRandomInterval();
-                msgDiv.innerHTML = '<div class="feedback-text">🎵 Новый интервал! Нажми "Сыграть".</div>';
-                setTimeout(() => msgDiv.innerHTML = '', 2000);
-            };
+            const again=document.createElement('button'); again.textContent='🔄 Ещё раз'; again.className='again-btn';
+            again.onclick=()=>{ currentInterval=selectRandomInterval(); msgDiv.innerHTML='<div class="feedback-text">🎵 Новый интервал! Нажми "Сыграть".</div>'; setTimeout(()=>msgDiv.innerHTML='',2000); };
             msgDiv.appendChild(again);
         }
 
-        // --- Лады (1 колонка, игра вверх-вниз) ---
+        // Лады
+        function renderScalesUI() {
+            const zone=document.getElementById('scalesDynamicZone');
+            zone.innerHTML=`
+                <div class="selector-row"><div class="selector-column"><h3>Выберите лад</h3><select id="scaleSelect"></select></div></div>
+                <div class="submit-area"><button class="check-btn" id="scaleCheckBtn">✅ Проверить</button></div>
+            `;
+            const sel=document.getElementById('scaleSelect');
+            const scales=filterScales();
+            sel.innerHTML=scales.map(s=>`<option value="${s.name}">${s.name}</option>`).join('');
+            document.getElementById('scaleCheckBtn').addEventListener('click', checkScaleAnswer);
+        }
         function selectRandomScale() {
-            const scale = scaleHist.getRandomUnique(scalesList, s => s.name);
+            const filtered=filterScales();
+            if(!filtered.length) return null;
+            const scale=scaleHist.getRandomUnique(filtered,s=>s.name);
             scaleHist.add(scale.name);
             return scale;
         }
-
-        function renderScalesUI() {
-            const zone = document.getElementById('scalesDynamicZone');
-            zone.innerHTML = `
-                <div class="selector-row">
-                    <div class="selector-column"><h3>Выберите лад</h3>
-                        <select id="scaleSelect">${scalesList.map(s => `<option value="${s.name}">${s.name}</option>`).join('')}</select>
-                    </div>
-                </div>
-                <div class="submit-area"><button class="check-btn" id="scaleCheckBtn">✅ Проверить</button></div>
-            `;
-            document.getElementById('scaleCheckBtn').addEventListener('click', checkScaleAnswer);
-        }
-
-        function startScales() {
-            scalesActive = true;
-            currentScale = selectRandomScale();
-            renderScalesUI();
-            document.getElementById('scalesMessageArea').innerHTML = '';
-        }
-
-        async function playScale() {
-            if (currentScale) await playScaleUpDown(currentScale.freqs);
-        }
-
+        function startScales() { scalesActive=true; currentScale=selectRandomScale(); renderScalesUI(); document.getElementById('scalesMessageArea').innerHTML=''; }
+        async function playScale() { if(currentScale) await playScaleUpDown(currentScale.freqs); }
         function checkScaleAnswer() {
-            if (!currentScale) return;
-            const selected = document.getElementById('scaleSelect').value;
-            const ok = (selected === currentScale.name);
-            const msgDiv = document.getElementById('scalesMessageArea');
-            msgDiv.innerHTML = '';
-            const fb = document.createElement('div');
-            fb.className = 'feedback-text';
-            fb.textContent = ok ? '✅ Верно! Отлично!' : `❌ Неправильно. Это был лад: ${currentScale.name}.`;
+            if(!currentScale) return;
+            const selected=document.getElementById('scaleSelect').value;
+            const ok=(selected===currentScale.name);
+            const msgDiv=document.getElementById('scalesMessageArea');
+            msgDiv.innerHTML='';
+            const fb=document.createElement('div'); fb.className='feedback-text';
+            fb.textContent=ok? '✅ Верно! Отлично!' : `❌ Неправильно. Это был лад: ${currentScale.name}.`;
             msgDiv.appendChild(fb);
-            const again = document.createElement('button');
-            again.textContent = '🔄 Ещё раз';
-            again.className = 'again-btn';
-            again.onclick = () => {
-                currentScale = selectRandomScale();
-                msgDiv.innerHTML = '<div class="feedback-text">🎵 Новый лад! Нажми "Сыграть".</div>';
-                setTimeout(() => msgDiv.innerHTML = '', 2000);
-            };
+            const again=document.createElement('button'); again.textContent='🔄 Ещё раз'; again.className='again-btn';
+            again.onclick=()=>{ currentScale=selectRandomScale(); msgDiv.innerHTML='<div class="feedback-text">🎵 Новый лад! Нажми "Сыграть".</div>'; setTimeout(()=>msgDiv.innerHTML='',2000); };
             msgDiv.appendChild(again);
         }
 
-        // Переключение вкладок
-        const chordsDiv = document.getElementById('chordsMode');
-        const intervalsDiv = document.getElementById('intervalsMode');
-        const scalesDiv = document.getElementById('scalesMode');
-        const tabs = document.querySelectorAll('.tab-btn');
-        function setMode(mode) {
-            chordsDiv.classList.add('hidden');
-            intervalsDiv.classList.add('hidden');
-            scalesDiv.classList.add('hidden');
-            if (mode === 'chords') { chordsDiv.classList.remove('hidden'); if(!chordsActive) startChords(); }
-            else if (mode === 'intervals') { intervalsDiv.classList.remove('hidden'); if(!intervalsActive) startIntervals(); }
-            else { scalesDiv.classList.remove('hidden'); if(!scalesActive) startScales(); }
-            tabs.forEach(btn => { if(btn.dataset.mode === mode) btn.classList.add('active'); else btn.classList.remove('active'); });
+        // Переключение режимов + обновление при изменении фильтров
+        function bindFilterUpdates() {
+            const chordFilters = ['chordTriads','chordSevenths','chordAug','chordDim','chordInversions'];
+            chordFilters.forEach(id=>{ document.getElementById(id).addEventListener('change',()=>{ if(chordsActive) currentChord=selectRandomChord(); }); });
+            const scaleFilters = ['scaleNatural','scaleHarmonic','scaleMelodic','scaleFolk','scaleOther'];
+            scaleFilters.forEach(id=>{ document.getElementById(id).addEventListener('change',()=>{ if(scalesActive) { currentScale=selectRandomScale(); const sel=document.getElementById('scaleSelect'); if(sel){ const scales=filterScales(); sel.innerHTML=scales.map(s=>`<option value="${s.name}">${s.name}</option>`).join(''); } } }); });
         }
-        tabs.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
 
-        document.getElementById('playChordBtn').addEventListener('click', playChord);
-        document.getElementById('playIntervalBtn').addEventListener('click', playInterval);
-        document.getElementById('playScaleBtn').addEventListener('click', playScale);
+        const chordsDiv=document.getElementById('chordsMode'), intervalsDiv=document.getElementById('intervalsMode'), scalesDiv=document.getElementById('scalesMode');
+        const tabs=document.querySelectorAll('.tab-btn');
+        function setMode(mode){
+            chordsDiv.classList.add('hidden'); intervalsDiv.classList.add('hidden'); scalesDiv.classList.add('hidden');
+            if(mode==='chords'){ chordsDiv.classList.remove('hidden'); if(!chordsActive) startChords(); }
+            else if(mode==='intervals'){ intervalsDiv.classList.remove('hidden'); if(!intervalsActive) startIntervals(); }
+            else{ scalesDiv.classList.remove('hidden'); if(!scalesActive) startScales(); }
+            tabs.forEach(btn=>{ if(btn.dataset.mode===mode) btn.classList.add('active'); else btn.classList.remove('active'); });
+        }
+        tabs.forEach(btn=>btn.addEventListener('click',()=>setMode(btn.dataset.mode)));
 
+        document.getElementById('playChordBtn').addEventListener('click',playChord);
+        document.getElementById('playIntervalBtn').addEventListener('click',playInterval);
+        document.getElementById('playScaleBtn').addEventListener('click',playScale);
+        bindFilterUpdates();
         setMode('chords');
     })();
 </script>
